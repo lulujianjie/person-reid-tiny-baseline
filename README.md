@@ -12,10 +12,10 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 }
 ```
 
-## Difference from official code
+## Difference from Official Code
 - Developed based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
-- No need install ignite and yacs
-- Support computing distMap using cosine similarity
+- No need to install ignite and yacs
+- Support computing DistMap using cosine similarity
 - Set hyperparameters using a configuration class
 - Only support ResNet50 as the backbone
 
