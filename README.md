@@ -1,7 +1,7 @@
 # A Tiny Person ReID Baseline
 Paper: "Bag of Tricks and A Strong Baseline for Deep Person Re-identification"[[pdf]](https://arxiv.org/abs/1903.07071)
 
-This project refers the official code [link](https://github.com/michuanhaohao/reid-strong-baseline), if you find this project useful, please cite the offical paper.
+This project refers the official code [link](https://github.com/michuanhaohao/reid-strong-baseline) and can reproduce the results as good as it on Market1501 when the input size is set to 256x128. If you find this project useful, please cite the offical paper.
 
 ```
 @inproceedings{luo2019bag,
