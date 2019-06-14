@@ -28,6 +28,8 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 | Model | Market1501 |
 | --- | -- |
 | ResNet50 (128x64)| 88.2/95.7/97.5/70.5 |
+The pretrained model[link](https://pan.baidu.com/s/1FrEOT3h7lAePddFHNWIEjg) can be downloaded now.
+Extraction code is **u3q5**.
 
 ## Get Started
 1. `cd` to folder where you want to download this repo
