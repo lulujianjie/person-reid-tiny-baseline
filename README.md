@@ -13,11 +13,37 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 ```
 
 ## Difference from Official Code
-- Developed based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
-- No need to install ignite and yacs
-- Support computing DistMap using cosine similarity
-- Set hyperparameters using a configuration class
-- Only support ResNet50 as the backbone
+
+* v0.1.1
+    - Add comments in config.py
+* v0.1.0
+    - Develop based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
+    - No need to install ignite and yacs
+    - Support computing DistMap using cosine similarity
+    - Set hyperparameters using a configuration class
+    - Only support ResNet50 as the backbone
+
+## Directory layout
+
+    .
+    ├── config      # hyperparameters settings
+    │   └── ...                 
+    ├── datasets    # dataloader
+    │   └── ...           
+    ├── log         # log and model weights             
+    ├── loss        # loss function code
+    │   └── ...   
+    ├── model       # model
+    │   └── ...  
+    ├── processor   # training and testing procedures
+    │   └── ...    
+    ├── solver      # optimization code
+    │   └── ...   
+    ├── utils       # metrics code
+    │   └── ...   
+    ├── imgs        # images for readme              
+    └── README.md
+
 
 ## Pipeline
 <div align=center>
@@ -28,8 +54,9 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 | Model | Market1501 |
 | --- | -- |
 | ResNet50 (128x64)| 88.2/95.7/97.5/70.5 |
+| ResNet50 (256x128)| 94.0/96.9/98.1/82.9 |
 
-The pretrained [model](https://pan.baidu.com/s/1FrEOT3h7lAePddFHNWIEjg) can be downloaded now.
+The pretrained (128x64) [model](https://pan.baidu.com/s/1FrEOT3h7lAePddFHNWIEjg) can be downloaded now.
 Extraction code is **u3q5**.
 
 ## Get Started

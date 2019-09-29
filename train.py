@@ -1,20 +1,16 @@
 import os
-
-import torch
-from config import Config
 from torch.backends import cudnn
 
+from config import Config
 from utils.logger import setup_logger
 from datasets import make_dataloader
 from model import make_model
 from solver import make_optimizer, WarmupMultiStepLR
 from loss import make_loss
-
 from processor import do_train
 
 
 if __name__ == '__main__':
-
     Cfg = Config()
     logger = setup_logger('{}'.format(Cfg.PROJECT_NAME), Cfg.LOG_DIR)
     logger.info("Running with config:\n{}".format(Cfg.PROJECT_NAME))

@@ -2,14 +2,10 @@ import torch
 import torchvision.transforms as T
 from torch.utils.data import DataLoader
 
-
 from .Market1501 import Market1501
 from .bases import ImageDataset
 from .preprocessing import RandomErasing
 from .sampler import RandomIdentitySampler
-
-from PIL import Image
-import numpy as np
 
 
 def train_collate_fn(batch):
@@ -26,9 +22,9 @@ def val_collate_fn(batch):
 def make_dataloader(Cfg):
     train_transforms = T.Compose([
         T.Resize(Cfg.INPUT_SIZE),
-        T.RandomHorizontalFlip(p=0.5),
-        T.Pad(10),
-        T.RandomCrop(Cfg.INPUT_SIZE),
+
+        T.RandomApply([T.RandomHorizontalFlip(p=0.5),T.Pad(10),\
+                       T.RandomCrop(Cfg.INPUT_SIZE)], p=0.5),
         #T.RandomRotation(10, resample=Image.BICUBIC, expand=False, center=None),
         T.ToTensor(),
         T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
@@ -47,14 +43,12 @@ def make_dataloader(Cfg):
 
     train_set = ImageDataset(dataset.train, train_transforms)
 
-    if Cfg.SAMPLER == 'softmax':
+    if Cfg.SAMPLER == 'triplet':
         train_loader = DataLoader(train_set,
             batch_size = Cfg.BATCHSIZE,
-            shuffle = False,
             num_workers = num_workers,
             sampler = RandomIdentitySampler(dataset.train, Cfg.BATCHSIZE, Cfg.NUM_IMG_PER_ID),
-            collate_fn = train_collate_fn, #customized batch sampler
-            drop_last = True
+            collate_fn = train_collate_fn#customized batch sampler
         )
     else:
         print('unsupported sampler! expected softmax but got {}'.format(Cfg.SAMPLER))

@@ -10,15 +10,15 @@ def make_loss(Cfg, num_classes):    # modified by gu
 
     if 'triplet' in Cfg.LOSS_TYPE:
         triplet = TripletLoss(Cfg.MARGIN)  # triplet loss
-    if 'center' in Cfg.LOSS_TYPE:
-        center_criterion = CenterLoss(num_classes=num_classes, feat_dim=feat_dim, use_gpu=True)  # center loss
+
+    center_criterion = CenterLoss(num_classes=num_classes, feat_dim=feat_dim, use_gpu=True)  # center loss
     if 'softmax' in Cfg.LOSS_TYPE:
         if Cfg.LOSS_LABELSMOOTH == 'on':
             xent = CrossEntropyLabelSmooth(num_classes=num_classes)  # new add by luo
             print("label smooth on, numclasses:", num_classes)
 
     def loss_func(score, feat, target):
-        if Cfg.LOSS_TYPE == 'triplet+center+softmax':
+        if Cfg.LOSS_TYPE == 'triplet+softmax+center':
             #print('Train with center loss, the loss type is triplet+center_loss')
             if Cfg.LOSS_LABELSMOOTH == 'on':
                 return Cfg.CE_LOSS_WEIGHT * xent(score, target) + \
@@ -28,7 +28,7 @@ def make_loss(Cfg, num_classes):    # modified by gu
                 return Cfg.CE_LOSS_WEIGHT * F.cross_entropy(score, target) + \
                        Cfg.TRIPLET_LOSS_WEIGHT * triplet(feat, target)[0] + \
                         Cfg.CENTER_LOSS_WEIGHT * center_criterion(feat, target)
-        if Cfg.LOSS_TYPE == 'center+softmax':
+        elif Cfg.LOSS_TYPE == 'softmax+center':
             #print('Train with center loss, the loss type is triplet+center_loss')
             if Cfg.LOSS_LABELSMOOTH == 'on':
                 return Cfg.CE_LOSS_WEIGHT * xent(score, target) + \
@@ -36,6 +36,14 @@ def make_loss(Cfg, num_classes):    # modified by gu
             else:
                 return Cfg.CE_LOSS_WEIGHT * F.cross_entropy(score, target) + \
                         Cfg.CENTER_LOSS_WEIGHT * center_criterion(feat, target)
+        elif Cfg.LOSS_TYPE == 'triplet+softmax':
+            #print('Train with center loss, the loss type is triplet+center_loss')
+            if Cfg.LOSS_LABELSMOOTH == 'on':
+                return Cfg.CE_LOSS_WEIGHT * xent(score, target) + \
+                       Cfg.TRIPLET_LOSS_WEIGHT * triplet(feat, target)[0]
+            else:
+                return Cfg.CE_LOSS_WEIGHT * F.cross_entropy(score, target) + \
+                       Cfg.TRIPLET_LOSS_WEIGHT * triplet(feat, target)[0]
         else:
             print('unexpected loss type')
     return loss_func, center_criterion

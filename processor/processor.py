@@ -14,7 +14,7 @@ def do_train(Cfg,
         val_loader,
         optimizer,
         optimizer_center,
-        scheduler,
+             scheduler,
         loss_fn,
         num_query):
     log_period = Cfg.LOG_PERIOD
@@ -45,8 +45,6 @@ def do_train(Cfg,
         acc_meter.reset()
         evaluator.reset()
 
-        scheduler.step()
-
         model.train()
         for iter, (img, vid) in enumerate(train_loader):
             optimizer.zero_grad()
@@ -59,9 +57,10 @@ def do_train(Cfg,
 
             loss.backward()
             optimizer.step()
-            for param in center_criterion.parameters():
-                param.grad.data *= (1. / Cfg.CENTER_LOSS_WEIGHT)
-            optimizer_center.step()
+            if 'center' in Cfg.LOSS_TYPE:
+                for param in center_criterion.parameters():
+                    param.grad.data *= (1. / Cfg.CENTER_LOSS_WEIGHT)
+                optimizer_center.step()
 
             acc = (score.max(1)[1] == target).float().mean()
             loss_meter.update(loss.item(),img.shape[0])
@@ -75,7 +74,7 @@ def do_train(Cfg,
         time_per_batch = (end_time - start_time) / (iter + 1)
         logger.info("Epoch {} done. Time per batch: {:.3f}[s] Speed: {:.1f}[samples/s]"
                     .format(epoch, time_per_batch, train_loader.batch_size / time_per_batch))
-
+        scheduler.step()
         if epoch % checkpoint_period == 0:
             torch.save(model.state_dict(), output_dir+Cfg.MODEL_NAME+'_{}.pth'.format(epoch))
 

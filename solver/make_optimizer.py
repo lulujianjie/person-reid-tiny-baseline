@@ -7,9 +7,9 @@ def make_optimizer(Cfg, model, center_criterion):
             continue
         lr = Cfg.BASE_LR
         weight_decay = Cfg.WEIGHT_DECAY
-        if "bias" in key:
-            lr = Cfg.BASE_LR * Cfg.BIAS_LR_FACTOR
-            weight_decay = Cfg.WEIGHT_DECAY_BIAS
+        # if "bias" in key:
+        #     lr = Cfg.BASE_LR * Cfg.BIAS_LR_FACTOR
+        #     weight_decay = Cfg.WEIGHT_DECAY_BIAS
         params += [{"params": [value], "lr": lr, "weight_decay": weight_decay}]
     if Cfg.OPTIMIZER == 'SGD':
         optimizer = getattr(torch.optim, Cfg.OPTIMIZER)(params, momentum=Cfg.MOMENTUM)
