@@ -28,25 +28,25 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 ## Directory layout
 
     .
-    ├── config      # hyperparameters settings
+    ├── config                  # hyperparameters settings
     │   └── ...                 
-    ├── datasets    # dataloader
+    ├── datasets                # dataloader
     │   └── ...           
-    ├── log         # log and model weights             
-    ├── loss        # loss function code
+    ├── log                     # log and model weights             
+    ├── loss                    # loss function code
     │   └── ...   
-    ├── model       # model
+    ├── model                   # model
     │   └── ...  
-    ├── processor   # training and testing procedures
+    ├── processor               # training and testing procedures
     │   └── ...    
-    ├── solver      # optimization code
+    ├── solver                  # optimization code
     │   └── ...   
-    ├── utils       # metrics code
+    ├── utils                   # metrics code
     │   └── ...   
-    ├── train.py       # train code 
-    ├── test.py       # test code 
+    ├── train.py                # train code 
+    ├── test.py                 # test code 
     ├── get_vis_result.py       # get visualized results 
-    ├── imgs        # images for readme              
+    ├── imgs                    # images for readme              
     └── README.md
 
 
