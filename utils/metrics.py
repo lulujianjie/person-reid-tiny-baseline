@@ -117,11 +117,6 @@ class R1_mAP():
         elif self.method == 'cosine':
             print('=> Computing DistMat with cosine similarity')
             distmat = cosine_similarity(qf, gf)
-        # m, n = qf.shape[0], gf.shape[0]
-        # distmat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, n) + \
-        #           torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
-        # distmat.addmm_(1, -2, qf, gf.t())
-        # distmat = distmat.cpu().numpy()
         cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
 
-        return cmc, mAP, distmat, self.pids, self.camids
+        return cmc, mAP, distmat, self.pids, self.camids, gf

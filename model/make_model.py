@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from .backbones.resnet import ResNet, BasicBlock, Bottleneck
+from loss.arcface import ArcCos
 
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
@@ -31,7 +32,7 @@ class Backbone(nn.Module):
         model_path = Cfg.PRETRAIN_PATH
         neck = Cfg.MODEL_NECK  # If train with BNNeck, options: 'bnneck' or 'no'
         neck_feat = Cfg.NECK_FEAT
-        ## Which feature of BNNeck to be used for test, before or after BNNneck, options: 'before' or 'after'
+        self.cos_layer = Cfg.COS_LAYER
         model_name = Cfg.MODEL_NAME
         pretrain_choice = Cfg.PRETRAIN_CHOICE
         if model_name == 'resnet50':
@@ -51,17 +52,19 @@ class Backbone(nn.Module):
         self.num_classes = num_classes
         self.neck = neck
         self.neck_feat = neck_feat
-
+        if self.cos_layer == 'yes':
+            print('using cosine layer')
+            self.arcface = ArcCos(self.in_planes, self.num_classes, s=30.0, m=0.50)
         if self.neck == 'no':
             self.classifier = nn.Linear(self.in_planes, self.num_classes)
 
         elif self.neck == 'bnneck':
-            self.bottleneck = nn.BatchNorm1d(self.in_planes, momentum=0.1, affine=False, track_running_stats=False)
+            self.bottleneck = nn.BatchNorm1d(self.in_planes, momentum=0.1, affine=False)
             self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
             self.bottleneck.apply(weights_init_kaiming)
             self.classifier.apply(weights_init_classifier)
 
-    def forward(self,x):
+    def forward(self,x, label=None):#label is unused if self.cos_layer == 'no'
         x = self.base(x)
         global_feat = nn.functional.avg_pool2d(x, x.shape[2:4])
         global_feat = global_feat.view(global_feat.shape[0], -1)  # flatten to (bs, 2048)
@@ -71,7 +74,10 @@ class Backbone(nn.Module):
             feat = self.bottleneck(global_feat)
 
         if self.training:
-            cls_score = self.classifier(feat)
+            if self.cos_layer == 'yes':
+                cls_score = self.arcface(feat, label)
+            else:
+                cls_score = self.classifier(feat)
             return cls_score, global_feat  # global feature for triplet loss
         else:
             if self.neck_feat == 'after':
@@ -84,9 +90,9 @@ class Backbone(nn.Module):
     def load_param(self, trained_path):
         param_dict = torch.load(trained_path)
         for i in param_dict:
-            if 'classifier' in i:
+            if 'classifier' in i or 'arcface' in i:
                 continue
-            self.state_dict()[i].copy_(param_dict[i])
+            self.state_dict()[i[7:]].copy_(param_dict[i])
 
 def make_model(Cfg, num_class):
     model = Backbone(num_class, Cfg)

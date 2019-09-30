@@ -44,6 +44,11 @@ def make_loss(Cfg, num_classes):    # modified by gu
             else:
                 return Cfg.CE_LOSS_WEIGHT * F.cross_entropy(score, target) + \
                        Cfg.TRIPLET_LOSS_WEIGHT * triplet(feat, target)[0]
+        elif Cfg.LOSS_TYPE == 'softmax':
+            if Cfg.LOSS_LABELSMOOTH == 'on':
+                return xent(score, target)
+            else:
+                return F.cross_entropy(score, target)
         else:
             print('unexpected loss type')
     return loss_func, center_criterion

@@ -15,8 +15,8 @@ def train_collate_fn(batch):
 #collate_fn这个函数的输入就是一个list，list的长度是一个batch size，list中的每个元素都是__getitem__得到的结果
 
 def val_collate_fn(batch):
-    imgs, pids, camids, _ = zip(*batch)
-    return torch.stack(imgs, dim=0), pids, camids
+    imgs, pids, camids, img_paths = zip(*batch)
+    return torch.stack(imgs, dim=0), pids, camids, img_paths
 
 
 def make_dataloader(Cfg):
@@ -44,14 +44,25 @@ def make_dataloader(Cfg):
     train_set = ImageDataset(dataset.train, train_transforms)
 
     if Cfg.SAMPLER == 'triplet':
+        print('using triplet sampler')
         train_loader = DataLoader(train_set,
-            batch_size = Cfg.BATCHSIZE,
-            num_workers = num_workers,
-            sampler = RandomIdentitySampler(dataset.train, Cfg.BATCHSIZE, Cfg.NUM_IMG_PER_ID),
-            collate_fn = train_collate_fn#customized batch sampler
+            batch_size=Cfg.BATCHSIZE,
+            num_workers=num_workers,
+            sampler=RandomIdentitySampler(dataset.train, Cfg.BATCHSIZE, Cfg.NUM_IMG_PER_ID),
+            collate_fn=train_collate_fn#customized batch sampler
+        )
+    elif Cfg.SAMPLER == 'softmax':
+        print('using softmax sampler')
+        train_loader = DataLoader(train_set,
+            batch_size=Cfg.BATCHSIZE,
+            shuffle=True,
+            num_workers=num_workers,
+            sampler=None,
+            collate_fn=train_collate_fn, #customized batch sampler
+            drop_last=True
         )
     else:
-        print('unsupported sampler! expected softmax but got {}'.format(Cfg.SAMPLER))
+        print('unsupported sampler! expected softmax or triplet but got {}'.format(Cfg.SAMPLER))
 
     val_set = ImageDataset(dataset.query + dataset.gallery, val_transforms)
     val_loader = DataLoader(val_set,

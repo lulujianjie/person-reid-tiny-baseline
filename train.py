@@ -22,9 +22,9 @@ if __name__ == '__main__':
     train_loader, val_loader, num_query, num_classes = make_dataloader(Cfg)
     model = make_model(Cfg, num_class=num_classes)
 
-    loss_func,center_criterion = make_loss(Cfg, num_classes=num_classes)
+    loss_func, center_criterion = make_loss(Cfg, num_classes=num_classes)
 
-    optimizer,optimizer_center = make_optimizer(Cfg, model, center_criterion)
+    optimizer, optimizer_center = make_optimizer(Cfg, model, center_criterion)
     scheduler = WarmupMultiStepLR(optimizer, Cfg.STEPS, Cfg.GAMMA,
                                   Cfg.WARMUP_FACTOR,
                                   Cfg.WARMUP_EPOCHS, Cfg.WARMUP_METHOD)

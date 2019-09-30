@@ -52,7 +52,7 @@ def do_train(Cfg,
             img = img.to(device)
             target = vid.to(device)
 
-            score, feat = model(img)
+            score, feat = model(img, target)
             loss = loss_fn(score, feat, target)
 
             loss.backward()
@@ -86,7 +86,7 @@ def do_train(Cfg,
                     feat = model(img)
                     evaluator.update((feat, vid, camid))
 
-            cmc, mAP, _, _, _ = evaluator.compute()
+            cmc, mAP, _, _, _,_ = evaluator.compute()
             logger.info("Validation Results - Epoch: {}".format(epoch))
             logger.info("mAP: {:.1%}".format(mAP))
             for r in [1, 5, 10]:
@@ -109,18 +109,21 @@ def do_inference(Cfg,
         model.to(device)
 
     model.eval()
-    for iter, (img, vid, camid) in enumerate(val_loader):
+    img_path_list = []
+    for iter, (img, vid, camid, imgpath) in enumerate(val_loader):
         with torch.no_grad():
             img = img.to(device)
             feat = model(img)
             evaluator.update((feat, vid, camid))
+            img_path_list.extend(imgpath)
 
-    cmc, mAP, distmat, vids, camids = evaluator.compute()
+    cmc, mAP, distmat, vids, camids, feats = evaluator.compute()
 
     np.save(Cfg.DIST_MAT, distmat)
     np.save(Cfg.VIDS, vids)
     np.save(Cfg.CAMIDS, camids)
-
+    np.save(Cfg.IMG_PATH, img_path_list[num_query:])
+    torch.save(feats, Cfg.FEATS)
     logger.info("Validation Results")
     logger.info("mAP: {:.1%}".format(mAP))
     for r in [1, 5, 10]:

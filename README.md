@@ -12,11 +12,13 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 }
 ```
 
-## Difference from Official Code
+## Updates (Difference from Official Code)
 
-* v0.1.1
+* v0.1.1 (Sep. 2019)
+    - Support ArcFace loss, which can **converge faster** (around 50 epochs) and achieve slightly **better performance** than **softmax+triplet loss+center loss**
+    - Support visualizing reid results
     - Add comments in config.py
-* v0.1.0
+* v0.1.0 (Jun. 2019)
     - Develop based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
     - No need to install ignite and yacs
     - Support computing DistMap using cosine similarity
@@ -41,6 +43,9 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
     │   └── ...   
     ├── utils       # metrics code
     │   └── ...   
+    ├── train.py       # train code 
+    ├── test.py       # test code 
+    ├── get_vis_result.py       # get visualized results 
     ├── imgs        # images for readme              
     └── README.md
 
@@ -51,10 +56,11 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 </div>
 
 ## Results on Market1501 (rank1/rank5/rank10/mAP)
-| Model | Market1501 |
-| --- | -- |
-| ResNet50 (128x64)| 88.2/95.7/97.5/70.5 |
-| ResNet50 (256x128)| 94.0/96.9/98.1/82.9 |
+| Model | Loss | Market1501 |
+| --- | -- | -- |
+| ResNet50 (128x64)| softmax+triplet+center | 88.2/95.7/97.5/70.5 |
+| ResNet50 (256x128)| softmax+triplet+center | 94.0/96.9/98.1/83.4 |
+| ResNet50 (256x128)| arcface | 94.7/97.7/98.3/84.3 |
 
 The pretrained (128x64) [model](https://pan.baidu.com/s/1FrEOT3h7lAePddFHNWIEjg) can be downloaded now.
 Extraction code is **u3q5**.
@@ -67,6 +73,7 @@ Extraction code is **u3q5**.
 3. Install dependencies:
     - [pytorch>=0.4](https://pytorch.org/)
     - torchvision
+    - cv2 (optional)
 
 
 ## Train
@@ -81,3 +88,12 @@ python train.py
 python test.py
 ```
 
+To get visualized reID results, first create `results` folder in log dir, then:
+```bash
+python get_vis_result.py
+
+```
+You will get the ranked results (query|rank1|rank2|...), like:
+<div align=center>
+<img src='imgs/results.png' width='600'>
+</div>

@@ -10,11 +10,9 @@ from model import make_model
 from utils.logger import setup_logger
 
 if __name__ == "__main__":
-    # with open('cfg_test.json') as f:
-    #     cfg = json.load(f)
     Cfg = Config()
     log_dir = Cfg.LOG_DIR
-    logger = setup_logger('{}'.format(Cfg.PROJECT_NAME), log_dir)
+    logger = setup_logger('{}.test'.format(Cfg.PROJECT_NAME), log_dir)
     os.environ['CUDA_VISIBLE_DEVICES'] = Cfg.DEVICE_ID
     cudnn.benchmark = True
 

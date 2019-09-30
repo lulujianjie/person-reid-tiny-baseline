@@ -12,7 +12,7 @@ class Config():
 
         # data loader
         self.DATALOADER_NUM_WORKERS = 8
-        self.SAMPLER = 'triplet'  # only support triplet sampler
+        self.SAMPLER = 'triplet'  # option: 'triplet','softmax'
         self.BATCHSIZE = 64
         self.NUM_IMG_PER_ID = 8
 
@@ -20,14 +20,15 @@ class Config():
         self.INPUT_SIZE = [256, 128]  # HxW
         self.MODEL_NAME = "resnet50"
         self.LAST_STRIDE = 1
-        self.PRETRAIN_PATH = "/nfs-data/lujj/pretrained_model/resnet50-19c8e357.pth"
+        self.PRETRAIN_PATH = "/xxx/pretrained_model/resnet50-19c8e357.pth"
         self.MODEL_NECK = 'bnneck'  # 'bnneck'
         self.NECK_FEAT = "after"
         self.PRETRAIN_CHOICE = 'imagenet'
+        self.COS_LAYER = 'yes'  # if using cos layer, please use softmax as loss function
 
         # loss
-        self.LOSS_TYPE = 'triplet+softmax+center'  # option: 'triplet+softmax','softmax+center'
-        self.LOSS_LABELSMOOTH = 'on'
+        self.LOSS_TYPE = 'softmax'  # option: 'triplet+softmax','softmax+center','triplet+softmax+center'
+        self.LOSS_LABELSMOOTH = 'no'  # option: 'on'
 
         # solver
         self.OPTIMIZER = 'Adam'
@@ -53,8 +54,12 @@ class Config():
         # test
         self.TEST_IMS_PER_BATCH = 128
         self.FEAT_NORM = "yes"
-        self.WEIGHT = './log/resnet50_120.pth'
+        self.WEIGHT = './log/resnet50_50.pth'
         self.DIST_MAT = self.LOG_DIR+"dist_mat.npy"
         self.VIDS = self.LOG_DIR+"vids.npy"
         self.CAMIDS = self.LOG_DIR+"camids.npy"
+        self.IMG_PATH = self.LOG_DIR+"imgpath.npy"
+        self.FEATS = self.LOG_DIR + "feats.pth"
         self.TEST_METHOD = 'cosine'
+
+        self.QUERY_DIR = '/home/lujj/datasets/Market-1501-v15.09.15/query/'
