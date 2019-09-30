@@ -16,7 +16,7 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 
 * v0.1.1 (Sep. 2019)
     - Support ArcFace loss, which can **converge faster** (around 50 epochs) and achieve slightly **better performance** than **softmax+triplet loss+center loss**
-    - Support visualizing reid results
+    - Support visualizing reID results
     - Add comments in config.py
 * v0.1.0 (Jun. 2019)
     - Develop based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
