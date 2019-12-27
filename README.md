@@ -12,44 +12,6 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 }
 ```
 
-## Updates (Difference from Official Code)
-
-* v0.1.1 (Sep. 2019)
-    - Support ArcFace loss, which can **converge faster** (around 50 epochs)
-    - Support visualizing reID results
-    - Add comments in config.py
-* v0.1.0 (Jun. 2019)
-    - Develop based on the pytorch template [link](https://github.com/lulujianjie/pytorch-project-template) 
-    - No need to install ignite and yacs
-    - Support computing DistMap using cosine similarity
-    - Set hyperparameters using a configuration class
-    - Only support ResNet50 as the backbone
-
-## Directory layout
-
-    .
-    ├── config                  # hyperparameters settings
-    │   └── ...                 
-    ├── datasets                # dataloader
-    │   └── ...           
-    ├── log                     # log and model weights             
-    ├── loss                    # loss function code
-    │   └── ...   
-    ├── model                   # model
-    │   └── ...  
-    ├── processor               # training and testing procedures
-    │   └── ...    
-    ├── solver                  # optimization code
-    │   └── ...   
-    ├── utils                   # metrics code
-    │   └── ...   
-    ├── train.py                # train code 
-    ├── test.py                 # test code 
-    ├── get_vis_result.py       # get visualized results 
-    ├── imgs                    # images for readme              
-    └── README.md
-
-
 ## Pipeline
 <div align=center>
 <img src='imgs/pipeline.jpg' width='800'>
