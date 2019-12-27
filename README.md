@@ -15,7 +15,7 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 ## Updates (Difference from Official Code)
 
 * v0.1.1 (Sep. 2019)
-    - Support ArcFace loss, which can **converge faster** (around 50 epochs) and achieve slightly **better performance** than **softmax+triplet loss+center loss**
+    - Support ArcFace loss, which can **converge faster** (around 50 epochs)
     - Support visualizing reID results
     - Add comments in config.py
 * v0.1.0 (Jun. 2019)
@@ -55,13 +55,7 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 <img src='imgs/pipeline.jpg' width='800'>
 </div>
 
-## Results on Market1501 (rank1/rank5/rank10/mAP)
-| Model | Loss | Market1501 |
-| --- | -- | -- |
-| ResNet50 (128x64)| softmax+triplet+center | 88.2/95.7/97.5/70.5 |
-| ResNet50 (256x128)| softmax+triplet+center | 94.0/96.9/98.1/83.4 |
-| ResNet50 (256x128)| arcface | 94.7/97.7/98.3/84.3 |
-
+## Pretrained Model
 The pretrained (128x64) [model](https://pan.baidu.com/s/1FrEOT3h7lAePddFHNWIEjg) can be downloaded now.
 Extraction code is **u3q5**.
 
