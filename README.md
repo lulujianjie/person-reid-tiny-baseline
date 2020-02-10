@@ -95,7 +95,7 @@ python ./tools/get_vis_result.py
 ```
 You will get the ranked results (query|rank1|rank2|...), like:
 <div align=center>
-<img src='imgs/results.png' width='600'>
+<img src='docs/results.png' width='600'>
 </div>
 
 ## Results
