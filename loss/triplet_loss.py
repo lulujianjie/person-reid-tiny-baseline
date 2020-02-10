@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 
+
 def normalize(x, axis=-1):
     """Normalizing to unit length along the specified dimension.
     Args:
@@ -10,6 +11,7 @@ def normalize(x, axis=-1):
     """
     x = 1. * x / (torch.norm(x, 2, axis, keepdim=True).expand_as(x) + 1e-12)
     return x
+
 
 def euclidean_dist(x, y):
     """
@@ -26,6 +28,7 @@ def euclidean_dist(x, y):
     dist.addmm_(1, -2, x, y.t())
     dist = dist.clamp(min=1e-12).sqrt()  # for numerical stability
     return dist
+
 
 def hard_example_mining(dist_mat, labels, return_inds=False):
     """For each anchor, find the hardest positive and negative sample.
@@ -56,7 +59,7 @@ def hard_example_mining(dist_mat, labels, return_inds=False):
     # both `dist_ap` and `relative_p_inds` with shape [N, 1]
     dist_ap, relative_p_inds = torch.max(
         dist_mat[is_pos].contiguous().view(N, -1), 1, keepdim=True)
-    #print(dist_mat[is_pos].shape)
+    # print(dist_mat[is_pos].shape)
     # `dist_an` means distance(anchor, negative)
     # both `dist_an` and `relative_n_inds` with shape [N, 1]
     dist_an, relative_n_inds = torch.min(
@@ -82,13 +85,16 @@ def hard_example_mining(dist_mat, labels, return_inds=False):
 
     return dist_ap, dist_an
 
-class TripletLoss(object):
-    """Modified from Tong Xiao's open-reid (https://github.com/Cysu/open-reid).
-    Related Triplet Loss theory can be found in paper 'In Defense of the Triplet
-    Loss for Person Re-Identification'."""
 
-    def __init__(self, margin=None):
+class TripletLoss(object):
+    """
+    Triplet loss using HARDER example mining,
+    modified based on original triplet loss using hard example mining
+    """
+
+    def __init__(self, margin=None, hard_factor=0.0):
         self.margin = margin
+        self.hard_factor = hard_factor
         if margin is not None:
             self.ranking_loss = nn.MarginRankingLoss(margin=margin)
         else:
@@ -96,13 +102,16 @@ class TripletLoss(object):
 
     def __call__(self, global_feat, labels, normalize_feature=False):
         if normalize_feature:
-            global_feat = normalize(global_feat, axis=-1)#64x2048
-        dist_mat = euclidean_dist(global_feat, global_feat)#64x64
-        dist_ap, dist_an = hard_example_mining(dist_mat, labels)#64x64 64x1
+            global_feat = normalize(global_feat, axis=-1)  # 64x2048
+        dist_mat = euclidean_dist(global_feat, global_feat)  # 64x64
+        dist_ap, dist_an = hard_example_mining(dist_mat, labels)  # 64x64 64x1
+
+        dist_ap *= (1.0 + self.hard_factor)
+        dist_an *= (1.0 - self.hard_factor)
+
         y = dist_an.new().resize_as_(dist_an).fill_(1)
         if self.margin is not None:
             loss = self.ranking_loss(dist_an, dist_ap, y)
         else:
             loss = self.ranking_loss(dist_an - dist_ap, y)
         return loss, dist_ap, dist_an
-

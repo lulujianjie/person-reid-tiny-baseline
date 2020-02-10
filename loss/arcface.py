@@ -5,9 +5,9 @@ from torch.nn import Parameter
 import math
 
 
-class ArcCos(nn.Module):
+class ArcFace(nn.Module):
     def __init__(self, in_features, out_features, s=30.0, m=0.50, bias=False):
-        super(ArcCos, self).__init__()
+        super(ArcFace, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.s = s

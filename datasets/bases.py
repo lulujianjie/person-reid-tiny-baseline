@@ -1,8 +1,10 @@
-from PIL import Image,ImageFile
+from PIL import Image, ImageFile
 
 from torch.utils.data import Dataset
 import os.path as osp
+
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 def read_image(img_path):
     """Keep reading image until succeed.
@@ -18,6 +20,7 @@ def read_image(img_path):
             print("IOError incurred when reading '{}'. Will redo. Don't worry. Just chill.".format(img_path))
             pass
     return img
+
 
 class BaseDataset(object):
     """
@@ -39,10 +42,12 @@ class BaseDataset(object):
     def print_dataset_statistics(self):
         raise NotImplementedError
 
+
 class BaseImageDataset(BaseDataset):
     """
     Base class of image reid dataset
     """
+
     def print_dataset_statistics(self, train, query, gallery):
         num_train_pids, num_train_imgs, num_train_cams = self.get_imagedata_info(train)
         num_query_pids, num_query_imgs, num_query_cams = self.get_imagedata_info(query)
@@ -56,6 +61,7 @@ class BaseImageDataset(BaseDataset):
         print("  query    | {:5d} | {:8d} | {:9d}".format(num_query_pids, num_query_imgs, num_query_cams))
         print("  gallery  | {:5d} | {:8d} | {:9d}".format(num_gallery_pids, num_gallery_imgs, num_gallery_cams))
         print("  ----------------------------------------")
+
 
 class ImageDataset(Dataset):
     def __init__(self, dataset, transform=None):

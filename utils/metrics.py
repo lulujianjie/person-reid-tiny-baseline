@@ -1,25 +1,30 @@
 import torch
 import numpy as np
 
-def euclidean_distance(qf,gf):
+from utils.reranking import re_ranking
+
+
+def euclidean_distance(qf, gf):
     m = qf.shape[0]
     n = gf.shape[0]
-    dist_mat = torch.pow(qf,2).sum(dim=1, keepdim=True).expand(m,n) +\
-        torch.pow(gf,2).sum(dim=1, keepdim=True).expand(n,m).t()
-    dist_mat.addmm_(1,-2,qf,gf.t())
+    dist_mat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, n) + \
+               torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
+    dist_mat.addmm_(1, -2, qf, gf.t())
     return dist_mat.cpu().numpy()
 
-def cosine_similarity(qf,gf):
+
+def cosine_similarity(qf, gf):
     epsilon = 0.00001
     dist_mat = qf.mm(gf.t())
-    qf_norm = torch.norm(qf, p=2, dim=1, keepdim=True) #mx1
-    gf_norm = torch.norm(gf, p=2, dim=1, keepdim=True) #nx1
+    qf_norm = torch.norm(qf, p=2, dim=1, keepdim=True)  # mx1
+    gf_norm = torch.norm(gf, p=2, dim=1, keepdim=True)  # nx1
     qg_normdot = qf_norm.mm(gf_norm.t())
 
-    dist_mat = dist_mat.mul(1/qg_normdot).cpu().numpy()
-    dist_mat = np.clip(dist_mat, -1+epsilon,1-epsilon)
+    dist_mat = dist_mat.mul(1 / qg_normdot).cpu().numpy()
+    dist_mat = np.clip(dist_mat, -1 + epsilon, 1 - epsilon)
     dist_mat = np.arccos(dist_mat)
     return dist_mat
+
 
 def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
     """Evaluation with market1501 metric
@@ -46,7 +51,7 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
         q_camid = q_camids[q_idx]
 
         # remove gallery samples that have the same pid and camid with query
-        order = indices[q_idx]#select one row
+        order = indices[q_idx]  # select one row
         remove = (g_pids[order] == q_pid) & (g_camids[order] == q_camid)
         keep = np.invert(remove)
 
@@ -80,29 +85,32 @@ def eval_func(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50):
 
     return all_cmc, mAP
 
+
 class R1_mAP():
-    def __init__(self, num_query, max_rank=50, feat_norm='yes', method='euclidean'):
+    def __init__(self, num_query, max_rank=50, feat_norm=True, method='euclidean', reranking=False):
         super(R1_mAP, self).__init__()
         self.num_query = num_query
         self.max_rank = max_rank
         self.feat_norm = feat_norm
         self.method = method
+        self.reranking=reranking
+
     def reset(self):
         self.feats = []
         self.pids = []
         self.camids = []
 
-    def update(self, output):#called once for each batch
+    def update(self, output):  # called once for each batch
         feat, pid, camid = output
         self.feats.append(feat)
         self.pids.extend(np.asarray(pid))
         self.camids.extend(np.asarray(camid))
 
-    def compute(self):#called after each epoch
+    def compute(self):  # called after each epoch
         feats = torch.cat(self.feats, dim=0)
-        if self.feat_norm == 'yes':
+        if self.feat_norm:
             print("The test feature is normalized")
-            feats = torch.nn.functional.normalize(feats, dim=1, p=2) #along channel
+            feats = torch.nn.functional.normalize(feats, dim=1, p=2)  # along channel
         # query
         qf = feats[:self.num_query]
         q_pids = np.asarray(self.pids[:self.num_query])
@@ -111,12 +119,18 @@ class R1_mAP():
         gf = feats[self.num_query:]
         g_pids = np.asarray(self.pids[self.num_query:])
         g_camids = np.asarray(self.camids[self.num_query:])
-        if self.method == 'euclidean':
-            print('=> Computing DistMat with euclidean distance')
-            distmat = euclidean_distance(qf, gf)
-        elif self.method == 'cosine':
-            print('=> Computing DistMat with cosine similarity')
-            distmat = cosine_similarity(qf, gf)
+        if self.reranking:
+            print('=> Enter reranking')
+            # distmat = re_ranking(qf, gf, k1=20, k2=6, lambda_value=0.3)
+            distmat = re_ranking(qf, gf, k1=30, k2=10, lambda_value=0.2)
+
+        else:
+            if self.method == 'euclidean':
+                print('=> Computing DistMat with euclidean distance')
+                distmat = euclidean_distance(qf, gf)
+            elif self.method == 'cosine':
+                print('=> Computing DistMat with cosine similarity')
+                distmat = cosine_similarity(qf, gf)
         cmc, mAP = eval_func(distmat, q_pids, g_pids, q_camids, g_camids)
 
-        return cmc, mAP, distmat, self.pids, self.camids, gf
+        return cmc, mAP, distmat, self.pids, self.camids, qf, gf

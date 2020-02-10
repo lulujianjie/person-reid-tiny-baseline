@@ -1,4 +1,4 @@
-# A Tiny Person ReID Baseline
+# Tiny Person ReID Baseline
 Paper: "Bag of Tricks and A Strong Baseline for Deep Person Re-identification"[[pdf]](https://arxiv.org/abs/1903.07071)
 
 This project refers the official code [link](https://github.com/michuanhaohao/reid-strong-baseline) and can reproduce the results as good as it on Market1501 when the input size is set to 256x128. If you find this project useful, please cite the offical paper.
@@ -12,9 +12,53 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 }
 ```
 
+## Updates (Difference from Official Code)
+* v0.1.2 (Feb. 2020)
+    - Support Harder Example Mining, which achieve better performance. See docs for details.
+    - Support visualizing augmented data
+    - Support flipped features
+    - Support search best parameters for reranking
+* v0.1.1 (Sep. 2019)
+    - Support ArcFace loss
+    - Support visualizing reID results
+    - Add comments in config.py
+* v0.1.0 (Jun. 2019)
+    - Develop based on the [pytorch template](https://github.com/lulujianjie/pytorch-project-template) 
+    - No need to install ignite and yacs
+    - Support computing distance using cosine similarity
+    - Set hyperparameters using a configuration class
+    - Only support ResNet50 as the backbone
+
+## Directory layout
+
+    .
+    ├── config                  # hyperparameters settings
+    │   └── ...                 
+    ├── datasets                # data loader
+    │   └── ...           
+    ├── log                     # log and model weights             
+    ├── loss                    # loss function code
+    │   └── ...   
+    ├── model                   # model
+    │   └── ...  
+    ├── processor               # training and testing procedures
+    │   └── ...    
+    ├── solver                  # optimization code
+    │   └── ...   
+    ├── tools                   # tools
+    │   └── ...
+    ├── utils                   # metrics code
+    │   └── ...
+    ├── train.py                # train code 
+    ├── test.py                 # test code 
+    ├── get_vis_result.py       # get visualized results 
+    ├── docs                    # docs for readme              
+    └── README.md
+
+
 ## Pipeline
 <div align=center>
-<img src='imgs/pipeline.jpg' width='800'>
+<img src='docs/pipeline.jpg' width='800'>
 </div>
 
 ## Pretrained Model
@@ -46,10 +90,21 @@ python test.py
 
 To get visualized reID results, first create `results` folder in log dir, then:
 ```bash
-python get_vis_result.py
+python ./tools/get_vis_result.py
 
 ```
 You will get the ranked results (query|rank1|rank2|...), like:
 <div align=center>
 <img src='imgs/results.png' width='600'>
 </div>
+
+## Results
+
+|model|method|mAP|Rank1|
+|---- |----  |----|----|
+|resnet50|triplet loss + softmax + center loss (B1)| 85.8| 94.1 |
+|resnet50|B1 + flipped feature| 86.3| 93.9 |
+|resnet50|B1 + **Harder Example Mining**| 86.2| 94.4 |
+|resnet50|B1 + flipped feature + **Harder Example Mining**| 86.6| 94.6 |
+|resnet50|B1 + **Harder Example Mining** + reranking| 94.1| 95.6 |
+|resnet50|B1 + **Harder Example Mining** + searched reranking| 94.2| 95.8 |

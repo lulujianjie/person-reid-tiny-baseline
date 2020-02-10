@@ -1,2 +1,2 @@
 from .make_loss import make_loss
-from .arcface import ArcCos
+from .arcface import ArcFace

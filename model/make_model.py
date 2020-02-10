@@ -1,16 +1,17 @@
 import torch
 import torch.nn as nn
 from .backbones.resnet import ResNet, BasicBlock, Bottleneck
-from loss.arcface import ArcCos
+from loss.arcface import ArcFace
+
 
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
     if classname.find('Linear') != -1:
-        nn.init.kaiming_normal_(m.weight, a=0, model = 'fan_out')
+        nn.init.kaiming_normal_(m.weight, a=0, model='fan_out')
         nn.init.constant_(m.bias, 0.0)
 
     elif classname.find('Conv') != -1:
-        nn.init.kaiming_normal_(m.weight, a=0, model = 'fan_in')
+        nn.init.kaiming_normal_(m.weight, a=0, model='fan_in')
         if m.bias is not None:
             nn.init.constant_(m.bias, 0.0)
     elif classname.find('BatchNorm') != -1:
@@ -18,23 +19,23 @@ def weights_init_kaiming(m):
             nn.init.constant_(m.weight, 1.0)
             nn.init.constant_(m.bias, 0.0)
 
+
 def weights_init_classifier(m):
     classname = m.__class__.__name__
     if classname.find('Linear') != -1:
-        nn.init.normal_(m.weight, std = 0.001)
+        nn.init.normal_(m.weight, std=0.001)
         if m.bias:
             nn.init.constant_(m.bias, 0.0)
 
+
 class Backbone(nn.Module):
-    def __init__(self, num_classes, Cfg):
+    def __init__(self, num_classes, cfg):
         super(Backbone, self).__init__()
-        last_stride = Cfg.LAST_STRIDE
-        model_path = Cfg.PRETRAIN_PATH
-        neck = Cfg.MODEL_NECK  # If train with BNNeck, options: 'bnneck' or 'no'
-        neck_feat = Cfg.NECK_FEAT
-        self.cos_layer = Cfg.COS_LAYER
-        model_name = Cfg.MODEL_NAME
-        pretrain_choice = Cfg.PRETRAIN_CHOICE
+        last_stride = cfg.LAST_STRIDE
+        model_path = cfg.PRETRAIN_PATH
+        self.cos_layer = cfg.COS_LAYER
+        model_name = cfg.MODEL_NAME
+        pretrain_choice = cfg.PRETRAIN_CHOICE
         if model_name == 'resnet50':
             self.in_planes = 2048
             self.base = ResNet(last_stride=last_stride,
@@ -50,50 +51,42 @@ class Backbone(nn.Module):
 
         self.gap = nn.AdaptiveAvgPool2d(1)
         self.num_classes = num_classes
-        self.neck = neck
-        self.neck_feat = neck_feat
-        if self.cos_layer == 'yes':
-            print('using cosine layer')
-            self.arcface = ArcCos(self.in_planes, self.num_classes, s=30.0, m=0.50)
-        if self.neck == 'no':
-            self.classifier = nn.Linear(self.in_planes, self.num_classes)
 
-        elif self.neck == 'bnneck':
-            self.bottleneck = nn.BatchNorm1d(self.in_planes, momentum=0.1, affine=False)
+        if self.cos_layer:
+            print('using cosine layer')
+            self.arcface = ArcFace(self.in_planes, self.num_classes, s=30.0, m=0.50)
+        else:
             self.classifier = nn.Linear(self.in_planes, self.num_classes, bias=False)
-            self.bottleneck.apply(weights_init_kaiming)
             self.classifier.apply(weights_init_classifier)
 
-    def forward(self,x, label=None):#label is unused if self.cos_layer == 'no'
+        self.bottleneck = nn.BatchNorm1d(self.in_planes)
+        self.bottleneck.bias.requires_grad_(False)
+        self.bottleneck.apply(weights_init_kaiming)
+
+    def forward(self, x, label=None):  # label is unused if self.cos_layer == 'no'
         x = self.base(x)
         global_feat = nn.functional.avg_pool2d(x, x.shape[2:4])
         global_feat = global_feat.view(global_feat.shape[0], -1)  # flatten to (bs, 2048)
-        if self.neck =='no':
-            feat = global_feat
-        elif 'bnneck' in self.neck:
-            feat = self.bottleneck(global_feat)
+        feat = self.bottleneck(global_feat)
 
         if self.training:
-            if self.cos_layer == 'yes':
+            if self.cos_layer:
                 cls_score = self.arcface(feat, label)
             else:
                 cls_score = self.classifier(feat)
             return cls_score, global_feat  # global feature for triplet loss
         else:
-            if self.neck_feat == 'after':
-                # print("Test with feature after BN")
-                return feat
-            else:
-                # print("Test with feature before BN")
-                return global_feat
+            return feat
 
     def load_param(self, trained_path):
         param_dict = torch.load(trained_path)
         for i in param_dict:
             if 'classifier' in i or 'arcface' in i:
                 continue
-            self.state_dict()[i[7:]].copy_(param_dict[i])
+            self.state_dict()[i].copy_(param_dict[i])
+        print('Loading pretrained model from {}'.format(trained_path))
 
-def make_model(Cfg, num_class):
-    model = Backbone(num_class, Cfg)
+
+def make_model(cfg, num_class):
+    model = Backbone(num_class, cfg)
     return model

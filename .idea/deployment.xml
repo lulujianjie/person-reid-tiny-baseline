@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="lujj@10.0.23.132:22" autoUploadExternalChanges="true">
+  <component name="PublishConfigData" autoUpload="Always" serverName="fqy@60.177.173.72:22" autoUploadExternalChanges="true" showAutoUploadSettingsWarning="false">
     <serverData>
-      <paths name="lujj@10.0.23.131:22">
+      <paths name="fqy@60.177.173.72:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/data/lujj/projects/pytorch-template" local="$PROJECT_DIR$" />
+            <mapping deploy="/nfs/fqy/projects/person-reid-tiny-baseline" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="lujj@10.0.23.132:22">
+      <paths name="xiaoshan">
         <serverdata>
           <mappings>
-            <mapping deploy="/nfs-data/lujj/projects/baseline-person-reid" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="lujj@10.0.23.133:22">
-        <serverdata>
-          <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/nfs/fqy/projects/person-reid-tiny-baseline" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

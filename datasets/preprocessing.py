@@ -3,6 +3,7 @@ import numpy as np
 import random
 import math
 
+
 class GaussianMask(object):
     def __init__(self, probability=0.5):
         self.probability = probability
@@ -10,7 +11,6 @@ class GaussianMask(object):
     def __call__(self, img):
         if random.uniform(0, 1) >= self.probability:
             return img
-        # print(img.size)
         width = img.size[0]
         height = img.size[1]
         mask = np.zeros((height, width))
