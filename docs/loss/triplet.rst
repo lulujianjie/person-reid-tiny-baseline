@@ -20,4 +20,4 @@ Harder Example Mining
 ---------------------
 
 .. math::
-    L = max((1 - \alpha)\cdot min(D_{a_i n_i}) - (1 + \alpha)\cdot max(D_{ap}) + m, 0)
+    L = max((1 - \alpha)\cdot min(D_{an}) - (1 + \alpha)\cdot max(D_{ap}) + m, 0)
