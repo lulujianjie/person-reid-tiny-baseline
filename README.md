@@ -14,7 +14,7 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 
 ## Updates (Difference from Official Code)
 * v0.1.2 (Feb. 2020)
-    - Support Harder Example Mining, which achieve better performance. See docs for details.
+    - Support Harder Example Mining, which achieve better performance. See [docs](https://tiny-reid.readthedocs.io/en/latest/loss/triplet.html#harder-example-mining) for details.
     - Support visualizing augmented data
     - Support flipped features
     - Support search best parameters for reranking

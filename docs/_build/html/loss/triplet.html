@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Triplet Loss &mdash; Tiny-ReID  documentation</title>
+  <title>Triplet Loss &mdash; Tiny-ReID 0.1.2 documentation</title>
   
 
   
@@ -23,7 +23,7 @@
       <script type="text/javascript">
           var DOCUMENTATION_OPTIONS = {
               URL_ROOT:'../',
-              VERSION:'',
+              VERSION:'0.1.2',
               LANGUAGE:'None',
               COLLAPSE_INDEX:false,
               FILE_SUFFIX:'.html',
@@ -34,6 +34,7 @@
         <script type="text/javascript" src="../_static/jquery.js"></script>
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -194,12 +195,18 @@
 <h1>Triplet Loss<a class="headerlink" href="#triplet-loss" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="id1">
 <h2>Triplet Loss<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[L = max(D_{an} - D_{ap} + m, 0)\]</div>
 </div>
 <div class="section" id="hard-example-mining">
 <h2>Hard Example Mining<a class="headerlink" href="#hard-example-mining" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[L = max(min(D_{an}) - max(D_{ap}) + m, 0)\]</div>
 </div>
 <div class="section" id="harder-example-mining">
 <h2>Harder Example Mining<a class="headerlink" href="#harder-example-mining" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[L = max((1 - \alpha)\cdot min(D_{a_i n_i}) - (1 + \alpha)\cdot max(D_{ap}) + m, 0)\]</div>
 </div>
 </div>
 
