@@ -12,6 +12,8 @@ This project refers the official code [link](https://github.com/michuanhaohao/re
 }
 ```
 
+**用我的滴滴云AI大师码0003在滴滴云上购买GPU/vGPU/机器学习产品可享受9折优惠，[点击](https://www.didiyun.com)前往滴滴云官网**
+
 ## Updates (Difference from Official Code)
 * v0.1.2 (Feb. 2020)
     - Support Harder Example Mining, which achieve better performance. See [docs](https://tiny-reid.readthedocs.io/en/latest/loss/triplet.html#harder-example-mining) for details.
